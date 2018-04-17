@@ -1,4 +1,5 @@
 class ProfileController < ApplicationController
+    before_action :confirmation_message
     before_action :authenticate_user!
     require 'net/http'
     require 'json'
@@ -31,6 +32,12 @@ class ProfileController < ApplicationController
     def portfolio
         @user = current_user
         @stocks = Stock.where(user_id: @user.id)
+    end
+    
+    private
+    
+    def confirmation_message
+        flash = flash
     end
     
 end

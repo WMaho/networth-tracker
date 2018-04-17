@@ -2,7 +2,7 @@
     <div class="col col-md-4">
         <div class="list-group" id="list-tab" role="tablist">
             <% @stocks.each do |s| %>
-                <% unless StockPrice.where("ticker = ? AND date < ?",s.ticker, s.buytime + 2.weeks) %>
+                <% unless ((price_update = PriceUpdate.find_by(ticker: s.ticker)) && (!price_update.updating)) %>
                     <% @updating[s.id] = true %>
                     <div class="list-group-item list-group-item-action flex-column align-items-start mt-2 text-center bg-info text-dark">Currently Updating: <%= s.ticker %></div>
                 <% else %>

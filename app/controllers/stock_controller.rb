@@ -11,7 +11,7 @@ class StockController < ApplicationController
     
     def create
         #Check that stock is real & form passes, if not, prevent from creation
-        if !StockPrice.find_by(ticker: stock_params[:ticker])
+        unless stock_exists = StockPrice.find_by(ticker: stock_params[:ticker])
             uri = URI("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=#{stock_params[:ticker]}&outputsize=compact&apikey=6E5BNXSBW9QWCJHY")
             res = Net::HTTP.get(uri)
             data = JSON.parse(res)
@@ -31,6 +31,10 @@ class StockController < ApplicationController
             buy_time = Date.today
         elsif buy_time < Date.parse('2000-1-1')
             buy_time = Date.parse('2000-1-1')
+        elsif stock_exists
+            if (min_date = StockPrice.where(ticker: stock_params[:ticker]).minimum(:date)) > buy_time
+                buy_time = min_date
+            end
         end
         
         
@@ -89,7 +93,7 @@ class StockController < ApplicationController
     def update
         
         #Check that stock is real & form passes, if not, prevent from creation
-        if !StockPrice.find_by(ticker: stock_params[:ticker])
+        unless stock_exists = StockPrice.find_by(ticker: stock_params[:ticker])
             uri = URI("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=#{stock_params[:ticker]}&outputsize=compact&apikey=6E5BNXSBW9QWCJHY")
             res = Net::HTTP.get(uri)
             data = JSON.parse(res)
@@ -111,6 +115,10 @@ class StockController < ApplicationController
             buy_time = Date.today
         elsif buy_time < Date.parse('2000-1-1')
             buy_time = Date.parse('2000-1-1')
+        elsif stock_exists
+            if (min_date = StockPrice.where(ticker: stock_params[:ticker]).minimum(:date)) > buy_time
+                buy_time = min_date
+            end
         end
         
         
@@ -148,7 +156,7 @@ class StockController < ApplicationController
         
             
         
-        if !@stock.update(stock_params)
+        if !@stock.update(user_id: current_user.id, ticker: stock_params[:ticker], quantity: stock_params[:quantity], buytime: buy_time, selltime: sell_time)
             flash[:danger] = "Something failed with the edit"
             redirect_to edit_stock_url
             return

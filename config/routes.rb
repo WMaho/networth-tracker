@@ -30,6 +30,7 @@ Rails.application.routes.draw do
     get 'confirm', to: 'devise/confirmations#show'
   end
   
+  #root 'devise/sessions#new'
   root 'profile#home'
   get 'add', to: 'stock#new', as: 'add_stock'
   post 'add', to: 'stock#create', as: 'stocks'
