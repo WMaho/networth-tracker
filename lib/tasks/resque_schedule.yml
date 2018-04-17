@@ -1,0 +1,6 @@
+UpdateAllStockPrices:
+    cron: "0 0 * * *"
+    class: "FindStocksToUpdateJob"
+    queue: update
+    args:
+    description: "Find all the stocks that need updating and update them"

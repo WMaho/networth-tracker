@@ -1,0 +1,7 @@
+<%= simple_form_for @stock do |f| %>
+  <%= f.input :ticker %>
+  <%= f.input :quantity %>
+  <%= f.input :buytime, as: :date, start_year: 2000, end_year: Date.today.year %>
+  <%= f.input :selltime, as: :date, start_year: 2000, end_year: Date.today.year, prompt: "Haven't Sold" %>
+  <%= f.button :submit %>
+<% end %>

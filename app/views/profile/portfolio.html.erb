@@ -1,0 +1,86 @@
+
+<% @value = Hash.new %>
+<% @stocks.each do |s| %>
+    <% if s.selltime.nil?%> 
+        <% stock_price = StockPrice.where("ticker = ? AND date > ?", s.ticker, s.buytime) %>
+    <% else %>
+        <% stock_price = StockPrice.where("ticker = ? AND date > ? AND date < ?", s.ticker, s.buytime, s.selltime) %>
+    <% end %>
+    <% stock_price.each do |sp| %>
+        <% if @value[sp.date].nil? %>
+            <% @value[sp.date] = sp.price * s.quantity %>
+        <% else %>
+            <% @value[sp.date] = @value[sp.date] + (sp.price * s.quantity) %>
+        <% end %>
+    <% end %>
+<% end %>
+<% @to_json = [] %>
+<% @value.each do |date,worth|%>
+    <% push = Hash.new %>
+    <% push['x'] = date.to_s %>
+    <% push['y'] = (worth).round(1) %>
+    <% @to_json.push(push) %>
+    <p>
+    <%= "Date: " + date.to_s%>
+    <%= "Value: " +worth.to_s %>
+    </p>
+<% end %>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+
+<canvas id="networth" width="400" height="400"></canvas>
+<script>
+    var ctx = document.getElementById("networth");
+    
+
+    
+    var results = JSON.parse('<%= @to_json.to_json.html_safe %>');
+
+    var timeFormat = 'YYYY-MM-DD';
+    
+    var data = {
+        datasets: [{ 
+            data: results,
+    
+            
+            
+            label: "AMZN",
+            borderColor: "#3e95cd",
+            fill: true,
+            pointRadius: 0
+          }]
+      };
+      
+      
+      
+    var options = {
+        responsive: false,
+        
+        title: {
+          display: true,
+          text: 'Net Worth'
+        },
+        
+        scales: {
+          xAxes: [{
+              type: "time",
+              time: {
+                format: timeFormat,
+                tooltipFormat: 'll'
+              },
+              scaleLabel: {
+                  display: true,
+                  labelString: 'Date'
+              }
+          }]
+        }
+    
+      };
+      
+    
+    var networth = new Chart(ctx, {
+      type: 'line',
+      data: data,
+      options: options
+    });
+</script>

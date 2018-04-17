@@ -1,0 +1,94 @@
+<div class="row">
+    <div class="col col-md-4">
+        <div class="list-group" id="list-tab" role="tablist">
+            <% @stocks.each do |s| %>
+                <% unless StockPrice.where("ticker = ? AND date < ?",s.ticker, s.buytime + 2.weeks) %>
+                    <% @updating[s.id] = true %>
+                    <div class="list-group-item list-group-item-action flex-column align-items-start mt-2 text-center bg-info text-dark">Currently Updating: <%= s.ticker %></div>
+                <% else %>
+                <a href="#list-<%= s.id %>" class="list-group-item list-group-item-action flex-column align-items-start mt-2" id="list-<%= s.id%>-list" data-toggle="list" role="tab" aria-controls="<%= s.id %>">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1"><%= s.ticker%></h5>
+                        <small>Quantity: <%= s.quantity %></small>
+                    </div>
+                    <% if s.selltime.nil?%>
+                        <p class="mb-1">Buydate: <%= s.buytime%></p>
+                        <p class="mb-1">Not Sold</p>
+                    <% else %>
+                        <p class="mb-1">Buydate: <%= s.buytime %></p>
+                        <p class="mb-1">Selldate: <%= s.selltime %></p>                        
+                    <% end %>
+               </a>
+               <% end %> 
+            <% end %>
+            <%= link_to "Add", add_stock_path, class: "list-group-item list-group-item-action flex-column align-items-start mt-2 text-center bg-success text-dark" %>
+        </div>
+    </div>
+    
+    <div class="col col-md-5">
+        <div class="tab-content" id="nav-tabContent">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+            <% @stocks.each do |s| %>
+                <% unless @updating[s.id] %>
+                <div class="tab-pane fade " id="list-<%= s.id%>" role="tabpanel" aria-labelledby="list-<%= s.id %>-list">
+                    <canvas id="<%= s.id %>" width= "400" height="400"></canvas>
+                    <script>
+                        var ctx = document.getElementById("<%= s.id%>");
+                        
+                        var results = JSON.parse('<%= @stockData[s.id].to_json.html_safe %>');
+                        
+                        var timeFormat = 'YYYY-MM-DD';
+                        
+                        var data = {
+                            datasets: [{
+                                data: results,
+                                label: "<%= s.ticker %>",
+                                borderColor: "#3e95cd",
+                                fill: true,
+                                pointRadius: 0
+                            }]   
+                        };
+                        
+                        var options = {
+                            responsive: false,
+                            
+                            title: {
+                                display: true,
+                                text: "Stock Value"
+                            },
+                            
+                            scales: {
+                                xAxes: [{
+                                    type: "time",
+                                    time: {
+                                        format: timeFormat,
+                                        tooltipFormat: 'll'
+                                    },
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Date'
+                                    }
+                                }]
+                            }
+                        };
+                        
+                        var networth = new Chart(ctx,{
+                            type: 'line',
+                            data: data,
+                            options: options
+                        });
+                        
+                        
+                    </script>
+                    <%= link_to 'Edit', edit_stock_path(s.id), class: "btn btn-warning" %>
+                    <%= link_to 'Delete', destroy_stock_path(s.id), class: "btn btn-danger", :method => 'delete', data: {confirm: "Are you sure?"} %>
+                </div>
+                <% end %>
+            <% end %>
+        </div>
+    </div>
+    <div class="col col-md-3">
+        <%= link_to 'Logout', delete_user_session_path, class: "btn btn-warning mt-3", :method => 'delete' %>
+    </div>
+</div>
+    
