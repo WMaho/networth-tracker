@@ -12,7 +12,7 @@ class StockController < ApplicationController
     def create
         #Check that stock is real & form passes, if not, prevent from creation
         unless stock_exists = StockPrice.find_by(ticker: stock_params[:ticker])
-            uri = URI("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=#{stock_params[:ticker]}&outputsize=compact&apikey=6E5BNXSBW9QWCJHY")
+            uri = URI("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=#{stock_params[:ticker]}&outputsize=compact&apikey=#{ENV["api_key"]}")
             res = Net::HTTP.get(uri)
             data = JSON.parse(res)
             
@@ -94,7 +94,7 @@ class StockController < ApplicationController
         
         #Check that stock is real & form passes, if not, prevent from creation
         unless stock_exists = StockPrice.find_by(ticker: stock_params[:ticker])
-            uri = URI("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=#{stock_params[:ticker]}&outputsize=compact&apikey=6E5BNXSBW9QWCJHY")
+            uri = URI("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=#{stock_params[:ticker]}&outputsize=compact&apikey=#{ENV["api_key"]}")
             res = Net::HTTP.get(uri)
             data = JSON.parse(res)
             

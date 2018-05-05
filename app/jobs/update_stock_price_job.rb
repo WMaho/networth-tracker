@@ -5,7 +5,7 @@ class UpdateStockPriceJob
 
   def self.perform(tick)
     # Do something later
-    uri = URI("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=#{tick}&outputsize=full&apikey=6E5BNXSBW9QWCJHY")
+    uri = URI("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=#{tick}&outputsize=full&apikey=#{ENV['api_key']}")
     res = Net::HTTP.get(uri)
     data = JSON.parse(res)
     data["Time Series (Daily)"].each do |d|

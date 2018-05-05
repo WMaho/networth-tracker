@@ -19,6 +19,8 @@ gem 'resque'
 gem 'resque-scheduler'
 # ChartJS
 gem 'chart-js-rails'
+# Figaro for configs
+gem 'figaro'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 

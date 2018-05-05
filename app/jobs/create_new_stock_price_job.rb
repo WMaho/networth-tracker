@@ -7,7 +7,7 @@ class CreateNewStockPriceJob #< ActiveJob::Base
     #Stock.create(user_id: 1, ticker: "Triggered anyway", date: Date.today, quantity: 3)
     if(!StockPrice.find_by(ticker: tick))
       #Stock.create(user_id: 1, ticker: "should have triggered",date: Date.today,quantity: 1)
-      uri = URI("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=#{tick}&outputsize=full&apikey=6E5BNXSBW9QWCJHY")
+      uri = URI("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=#{tick}&outputsize=full&apikey=#{ENV['api_key']}")
       res = Net::HTTP.get(uri)
       data = JSON.parse(res)
       price_update = PriceUpdate.create(ticker: tick, updating: true)
