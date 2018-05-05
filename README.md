@@ -1,7 +1,7 @@
-#Networth Tracker
+# Networth Tracker
 Simple networth charting app
 
-##Setup
+## Setup
 
 Generate API Key from then place within config/application.yml
 ```
